@@ -2,8 +2,10 @@ package renamer
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -222,5 +224,39 @@ func TestRenameDateOverride(t *testing.T) {
 	assertFiles(t, dir, []string{
 		fmt.Sprintf("2020-01-15-%s-001.360", cameraID),
 		fmt.Sprintf("2020-01-15-%s-002.360", cameraID),
+	})
+}
+
+func TestRenameVerbose(t *testing.T) {
+	dir := t.TempDir()
+	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
+
+	r, w, _ := os.Pipe()
+	old := os.Stdout
+	os.Stdout = w
+
+	err := Rename(dir, Flags{Verbose: true})
+
+	w.Close()
+	os.Stdout = old
+
+	if err != nil {
+		t.Fatalf("Rename failed: %v", err)
+	}
+
+	out, _ := io.ReadAll(r)
+	output := string(out)
+
+	cameraID := filepath.Base(dir)
+	if !strings.Contains(output, fmt.Sprintf("GS010001.360 -> %s", expectedName(cameraID, 1, ".360"))) {
+		t.Errorf("expected verbose line for file 1, got:\n%s", output)
+	}
+	if !strings.Contains(output, fmt.Sprintf("GS010002.360 -> %s", expectedName(cameraID, 2, ".360"))) {
+		t.Errorf("expected verbose line for file 2, got:\n%s", output)
+	}
+
+	assertFiles(t, dir, []string{
+		expectedName(cameraID, 1, ".360"),
+		expectedName(cameraID, 2, ".360"),
 	})
 }

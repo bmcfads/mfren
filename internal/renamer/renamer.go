@@ -10,8 +10,9 @@ import (
 )
 
 type Flags struct {
-	Camera string
-	Date   string
+	Camera  string
+	Date    string
+	Verbose bool
 }
 
 // Rename walks dir and renames all media files to the format
@@ -25,6 +26,7 @@ func Rename(dir string, flags Flags) error {
 	if flags.Date != "" {
 		date = flags.Date
 	}
+	verbose := flags.Verbose
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -43,7 +45,7 @@ func Rename(dir string, flags Flags) error {
 			return fmt.Errorf("--camera cannot be used when subdirectories are present")
 		}
 		for _, subdir := range subdirs {
-			if err := renameFiles(filepath.Join(dir, subdir), date, subdir); err != nil {
+			if err := renameFiles(filepath.Join(dir, subdir), date, subdir, verbose); err != nil {
 				return err
 			}
 		}
@@ -52,7 +54,7 @@ func Rename(dir string, flags Flags) error {
 		if flags.Camera != "" {
 			cameraID = flags.Camera
 		}
-		if err := renameFiles(dir, date, cameraID); err != nil {
+		if err := renameFiles(dir, date, cameraID, verbose); err != nil {
 			return err
 		}
 	}
@@ -60,7 +62,7 @@ func Rename(dir string, flags Flags) error {
 	return nil
 }
 
-func renameFiles(dir, date, cameraID string) error {
+func renameFiles(dir, date, cameraID string, verbose bool) error {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("cannot read directory: %w", err)
@@ -87,6 +89,10 @@ func renameFiles(dir, date, cameraID string) error {
 
 		if err := os.Rename(oldPath, newPath); err != nil {
 			return fmt.Errorf("cannot rename %s: %w", file, err)
+		}
+
+		if verbose {
+			fmt.Printf("%s -> %s\n", file, newName)
 		}
 	}
 

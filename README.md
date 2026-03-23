@@ -30,6 +30,7 @@ Flags:
   -c, --camera string   camera ID override
   -d, --date string     date override (YYYY-MM-DD)
   -h, --help            help for mfren
+      --verbose         print each rename as it happens
   -v, --version         version for mfren
 ```
 
