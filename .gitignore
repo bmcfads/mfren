@@ -1,2 +1,3 @@
-.DS_Store
+# Executables
+*.exe
 mfren
