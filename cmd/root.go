@@ -20,11 +20,13 @@ var rootCmd = &cobra.Command{
 
 var flagCamera string
 var flagDate string
+var flagDryRun bool
 var flagVerbose bool
 
 func init() {
 	rootCmd.Flags().StringVarP(&flagCamera, "camera", "c", "", "camera ID override")
 	rootCmd.Flags().StringVarP(&flagDate, "date", "d", "", "date override (YYYY-MM-DD)")
+	rootCmd.Flags().BoolVarP(&flagDryRun, "dry-run", "n", false, "print renames without applying them")
 	rootCmd.Flags().BoolVar(&flagVerbose, "verbose", false, "print each rename as it happens")
 }
 
@@ -58,6 +60,7 @@ func run(cmd *cobra.Command, args []string) error {
 	return renamer.Rename(dir, renamer.Flags{
 		Camera:  flagCamera,
 		Date:    flagDate,
+		DryRun:  flagDryRun,
 		Verbose: flagVerbose,
 	})
 }

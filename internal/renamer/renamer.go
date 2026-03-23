@@ -12,6 +12,7 @@ import (
 type Flags struct {
 	Camera  string
 	Date    string
+	DryRun  bool
 	Verbose bool
 }
 
@@ -22,11 +23,17 @@ type Flags struct {
 // the file count resetting to 001 per subdirectory. Only one level
 // of subdirectories is searched. Hidden files are skipped.
 func Rename(dir string, flags Flags) error {
-	date := time.Now().Format("2006-01-02")
-	if flags.Date != "" {
-		date = flags.Date
-	}
+	date := flags.Date
+	dryRun := flags.DryRun
 	verbose := flags.Verbose
+
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	}
+
+	if dryRun {
+		fmt.Println("Dry run mode, no files will be renamed")
+	}
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -45,7 +52,7 @@ func Rename(dir string, flags Flags) error {
 			return fmt.Errorf("--camera cannot be used when subdirectories are present")
 		}
 		for _, subdir := range subdirs {
-			if err := renameFiles(filepath.Join(dir, subdir), date, subdir, verbose); err != nil {
+			if err := renameFiles(filepath.Join(dir, subdir), date, subdir, dryRun, verbose); err != nil {
 				return err
 			}
 		}
@@ -54,7 +61,7 @@ func Rename(dir string, flags Flags) error {
 		if flags.Camera != "" {
 			cameraID = flags.Camera
 		}
-		if err := renameFiles(dir, date, cameraID, verbose); err != nil {
+		if err := renameFiles(dir, date, cameraID, dryRun, verbose); err != nil {
 			return err
 		}
 	}
@@ -62,7 +69,7 @@ func Rename(dir string, flags Flags) error {
 	return nil
 }
 
-func renameFiles(dir, date, cameraID string, verbose bool) error {
+func renameFiles(dir, date, cameraID string, dryRun, verbose bool) error {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("cannot read directory: %w", err)
@@ -87,12 +94,14 @@ func renameFiles(dir, date, cameraID string, verbose bool) error {
 		oldPath := filepath.Join(dir, file)
 		newPath := filepath.Join(dir, newName)
 
-		if err := os.Rename(oldPath, newPath); err != nil {
-			return fmt.Errorf("cannot rename %s: %w", file, err)
+		if dryRun || verbose {
+			fmt.Printf("%s -> %s\n", file, newName)
 		}
 
-		if verbose {
-			fmt.Printf("%s -> %s\n", file, newName)
+		if !dryRun {
+			if err := os.Rename(oldPath, newPath); err != nil {
+				return fmt.Errorf("cannot rename %s: %w", file, err)
+			}
 		}
 	}
 

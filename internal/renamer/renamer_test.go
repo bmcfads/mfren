@@ -227,6 +227,42 @@ func TestRenameDateOverride(t *testing.T) {
 	})
 }
 
+func TestRenameDryRun(t *testing.T) {
+	dir := t.TempDir()
+	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
+
+	r, w, _ := os.Pipe()
+	old := os.Stdout
+	os.Stdout = w
+
+	err := Rename(dir, Flags{DryRun: true})
+
+	w.Close()
+	os.Stdout = old
+
+	if err != nil {
+		t.Fatalf("Rename failed: %v", err)
+	}
+
+	out, _ := io.ReadAll(r)
+	output := string(out)
+
+	if !strings.Contains(output, "Dry run mode, no files will be renamed") {
+		t.Errorf("expected dry run header, got:\n%s", output)
+	}
+
+	cameraID := filepath.Base(dir)
+	if !strings.Contains(output, fmt.Sprintf("GS010001.360 -> %s", expectedName(cameraID, 1, ".360"))) {
+		t.Errorf("expected dry run line for file 1, got:\n%s", output)
+	}
+	if !strings.Contains(output, fmt.Sprintf("GS010002.360 -> %s", expectedName(cameraID, 2, ".360"))) {
+		t.Errorf("expected dry run line for file 2, got:\n%s", output)
+	}
+
+	// files should not have been renamed
+	assertFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
+}
+
 func TestRenameVerbose(t *testing.T) {
 	dir := t.TempDir()
 	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
