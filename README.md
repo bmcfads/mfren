@@ -22,16 +22,14 @@ go install .
 
 ## Usage
  
-```bash
-mfren <directory> [options]
 ```
+Usage:
+  mfren <directory> [flags]
 
-### Options
- 
-| Option | Shorthand | Default | Description |
-|--------|-----------|---------|-------------|
-| `--help` | | | Show help |
-| `--version` | | | Show version |
+Flags:
+  -h, --help      help for mfren
+  -v, --version   version for mfren
+```
 
 ### Output Format
  
