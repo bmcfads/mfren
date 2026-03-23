@@ -27,8 +27,9 @@ Usage:
   mfren <directory> [flags]
 
 Flags:
-  -h, --help      help for mfren
-  -v, --version   version for mfren
+  -c, --camera string   camera ID override
+  -h, --help            help for mfren
+  -v, --version         version for mfren
 ```
 
 ### Output Format
