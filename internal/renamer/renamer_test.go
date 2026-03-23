@@ -59,7 +59,7 @@ func TestRenameFlatDirectory(t *testing.T) {
 		"GS010003.360",
 	})
 
-	if err := Rename(dir); err != nil {
+	if err := Rename(dir, Flags{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -85,7 +85,7 @@ func TestRenameWithSubdirectories(t *testing.T) {
 	createTestFiles(t, cam2, []string{"GX010001.MP4", "GX010002.MP4"})
 	createTestFiles(t, cam3, []string{"GX010001.MP4", "GX010002.MP4"})
 
-	if err := Rename(dir); err != nil {
+	if err := Rename(dir, Flags{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -109,7 +109,7 @@ func TestRenameSkipsHiddenFiles(t *testing.T) {
 	dir := t.TempDir()
 	createTestFiles(t, dir, []string{"GS010001.360", ".DS_Store", ".hidden"})
 
-	if err := Rename(dir); err != nil {
+	if err := Rename(dir, Flags{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -128,7 +128,7 @@ func TestRenameSkipsHiddenFiles(t *testing.T) {
 func TestRenameEmptyDirectory(t *testing.T) {
 	dir := t.TempDir()
 
-	if err := Rename(dir); err != nil {
+	if err := Rename(dir, Flags{}); err != nil {
 		t.Fatalf("Rename failed on empty directory: %v", err)
 	}
 }
@@ -144,7 +144,7 @@ func TestRenameSubdirectoryContainingDirectory(t *testing.T) {
 	createTestFiles(t, cam1, []string{"GS010001.360", "GS010002.360"})
 	createTestFiles(t, nested, []string{"GS010001.360"})
 
-	if err := Rename(dir); err != nil {
+	if err := Rename(dir, Flags{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -168,7 +168,7 @@ func TestRenameSubdirectoriesIgnoresTopLevelFiles(t *testing.T) {
 	createTestFiles(t, dir, []string{"GS010001.360"})
 	createTestFiles(t, cam1, []string{"GS010002.360"})
 
-	if err := Rename(dir); err != nil {
+	if err := Rename(dir, Flags{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -181,5 +181,31 @@ func TestRenameSubdirectoriesIgnoresTopLevelFiles(t *testing.T) {
 		if !entry.IsDir() && entry.Name() != "GS010001.360" {
 			t.Errorf("top level file should not have been renamed, got %s", entry.Name())
 		}
+	}
+}
+
+func TestRenameCameraOverride(t *testing.T) {
+	dir := t.TempDir()
+	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
+
+	if err := Rename(dir, Flags{Camera: "my-cam"}); err != nil {
+		t.Fatalf("Rename failed: %v", err)
+	}
+
+	assertFiles(t, dir, []string{
+		expectedName("my-cam", 1, ".360"),
+		expectedName("my-cam", 2, ".360"),
+	})
+}
+
+func TestRenameCameraErrorWithSubdirectories(t *testing.T) {
+	dir := t.TempDir()
+	cam1 := filepath.Join(dir, testCameraIDs[0])
+	os.Mkdir(cam1, 0755)
+	createTestFiles(t, cam1, []string{"GS010001.360"})
+
+	err := Rename(dir, Flags{Camera: "my-cam"})
+	if err == nil {
+		t.Fatal("expected error when --camera is used with subdirectories, got nil")
 	}
 }

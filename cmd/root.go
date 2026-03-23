@@ -17,6 +17,12 @@ var rootCmd = &cobra.Command{
 	RunE:    run,
 }
 
+var flagCamera string
+
+func init() {
+	rootCmd.Flags().StringVarP(&flagCamera, "camera", "c", "", "camera ID override")
+}
+
 func Execute() error {
 	rootCmd.SilenceErrors = true
 	rootCmd.SilenceUsage = true
@@ -38,5 +44,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("%s is not a directory", dir)
 	}
 
-	return renamer.Rename(dir)
+	return renamer.Rename(dir, renamer.Flags{
+		Camera: flagCamera,
+	})
 }
