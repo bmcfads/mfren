@@ -11,6 +11,7 @@ import (
 
 type Flags struct {
 	Camera string
+	Date   string
 }
 
 // Rename walks dir and renames all media files to the format
@@ -20,6 +21,11 @@ type Flags struct {
 // the file count resetting to 001 per subdirectory. Only one level
 // of subdirectories is searched. Hidden files are skipped.
 func Rename(dir string, flags Flags) error {
+	date := time.Now().Format("2006-01-02")
+	if flags.Date != "" {
+		date = flags.Date
+	}
+
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("cannot read directory: %w", err)
@@ -37,7 +43,7 @@ func Rename(dir string, flags Flags) error {
 			return fmt.Errorf("--camera cannot be used when subdirectories are present")
 		}
 		for _, subdir := range subdirs {
-			if err := renameFiles(filepath.Join(dir, subdir), subdir); err != nil {
+			if err := renameFiles(filepath.Join(dir, subdir), date, subdir); err != nil {
 				return err
 			}
 		}
@@ -46,7 +52,7 @@ func Rename(dir string, flags Flags) error {
 		if flags.Camera != "" {
 			cameraID = flags.Camera
 		}
-		if err := renameFiles(dir, cameraID); err != nil {
+		if err := renameFiles(dir, date, cameraID); err != nil {
 			return err
 		}
 	}
@@ -54,7 +60,7 @@ func Rename(dir string, flags Flags) error {
 	return nil
 }
 
-func renameFiles(dir, cameraID string) error {
+func renameFiles(dir, date, cameraID string) error {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("cannot read directory: %w", err)
@@ -72,8 +78,6 @@ func renameFiles(dir, cameraID string) error {
 	}
 
 	sort.Strings(files)
-
-	date := time.Now().Format("2006-01-02")
 
 	for i, file := range files {
 		ext := filepath.Ext(file)

@@ -209,3 +209,18 @@ func TestRenameCameraErrorWithSubdirectories(t *testing.T) {
 		t.Fatal("expected error when --camera is used with subdirectories, got nil")
 	}
 }
+
+func TestRenameDateOverride(t *testing.T) {
+	dir := t.TempDir()
+	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
+
+	if err := Rename(dir, Flags{Date: "2020-01-15"}); err != nil {
+		t.Fatalf("Rename failed: %v", err)
+	}
+
+	cameraID := filepath.Base(dir)
+	assertFiles(t, dir, []string{
+		fmt.Sprintf("2020-01-15-%s-001.360", cameraID),
+		fmt.Sprintf("2020-01-15-%s-002.360", cameraID),
+	})
+}

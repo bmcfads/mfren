@@ -28,6 +28,7 @@ Usage:
 
 Flags:
   -c, --camera string   camera ID override
+  -d, --date string     date override (YYYY-MM-DD)
   -h, --help            help for mfren
   -v, --version         version for mfren
 ```
