@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# generate mock test files for mfren manual testing
+# generate mock media files for mfren manual testing
 # usage: ./scripts/gen-test-files.sh [destination]
 # if no destination is provided, defaults to /tmp
 

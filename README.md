@@ -94,6 +94,50 @@ Print supported extensions:
 mfren --list-extensions
 ```
 
+## Generating mock media files
+
+> [!WARNING]
+> The script deletes and recreates the `media` directory at the destination on each run.
+
+A script is provided to generate mock media files for manual testing:
+
+```bash
+./scripts/gen-test-files.sh [destination]
+```
+
+If no destination is provided, files are created under `/tmp/media`. The script will prompt you to select a scenario:
+
+**Scenario 1 — Flat directory**
+
+Creates a single directory with 10 `.360` files and a `shoot-notes.txt`:
+
+```
+media/
+  GS01000001.360
+  ...
+  GS01000010.360
+  shoot-notes.txt
+```
+
+**Scenario 2 — Subdirectories with top level files**
+
+Creates a top-level directory with files plus three camera subdirectories, each with a different file type:
+
+```
+media/
+  GS01000001.360 ... GS01000010.360
+  shoot-notes.txt
+  cam-id-01/
+    GS01000001.360 ... GS01000010.360
+    shoot-notes.txt
+  cam-id-02/
+    GX01000001.mp4 ... GX01000010.mp4
+    shoot-notes.txt
+  cam-id-03/
+    GOPR000001.jpg ... GOPR000010.jpg
+    shoot-notes.txt
+```
+
 ## Behaviour
 
 ### Directory structure
