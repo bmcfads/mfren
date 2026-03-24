@@ -16,19 +16,21 @@ var rootCmd = &cobra.Command{
 	Use:     "mfren <directory>",
 	Short:   "Rename media files after shoot",
 	Version: "0.1.0",
-	Args:    cobra.ExactArgs(1),
+	Args:    cobra.RangeArgs(0, 1),
 	RunE:    run,
 }
 
 var flagCamera string
 var flagDate string
 var flagDryRun bool
+var flagListExtensions bool
 var flagVerbose bool
 
 func init() {
 	rootCmd.Flags().StringVarP(&flagCamera, "camera", "c", "", "camera ID override")
 	rootCmd.Flags().StringVarP(&flagDate, "date", "d", "", "date override (YYYY-MM-DD)")
 	rootCmd.Flags().BoolVarP(&flagDryRun, "dry-run", "n", false, "print renames without applying them")
+	rootCmd.Flags().BoolVar(&flagListExtensions, "list-extensions", false, "print supported file extensions")
 	rootCmd.Flags().BoolVar(&flagVerbose, "verbose", false, "print each rename as it happens")
 }
 
@@ -39,6 +41,29 @@ func Execute() error {
 }
 
 func run(cmd *cobra.Command, args []string) error {
+	if flagDate != "" {
+		if _, err := time.Parse("2006-01-02", flagDate); err != nil {
+			return fmt.Errorf("invalid date format, expected YYYY-MM-DD")
+		}
+	}
+
+	if flagListExtensions {
+		if cmd.Flags().NFlag() > 1 {
+			return fmt.Errorf("--list-extensions cannot be used with other flags")
+		}
+		if len(args) > 0 {
+			return fmt.Errorf("--list-extensions does not accept a directory argument")
+		}
+		fmt.Printf("360:   [%s]\n", strings.Join(renamer.Extensions360, ", "))
+		fmt.Printf("Photo: [%s]\n", strings.Join(renamer.ExtensionsPhoto, ", "))
+		fmt.Printf("Video: [%s]\n", strings.Join(renamer.ExtensionsVideo, ", "))
+		return nil
+	}
+
+	if len(args) == 0 {
+		return fmt.Errorf("accepts 1 arg(s), received 0")
+	}
+
 	dir, err := filepath.Abs(args[0])
 	if err != nil {
 		return fmt.Errorf("cannot resolve directory path: %w", err)
@@ -51,12 +76,6 @@ func run(cmd *cobra.Command, args []string) error {
 
 	if !info.IsDir() {
 		return fmt.Errorf("%s is not a directory", dir)
-	}
-
-	if flagDate != "" {
-		if _, err := time.Parse("2006-01-02", flagDate); err != nil {
-			return fmt.Errorf("invalid date format, expected YYYY-MM-DD")
-		}
 	}
 
 	if !flagDryRun {
