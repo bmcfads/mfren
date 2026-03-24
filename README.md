@@ -94,6 +94,40 @@ Print supported extensions:
 mfren --list-extensions
 ```
 
+## Behaviour
+
+### Directory structure
+
+- If no subdirectories exist, files in the target directory are renamed directly.
+- If the target directory contains subdirectories, files within each subdirectory are renamed independently using the subdirectory name as the camera ID. Top level files are ignored.
+- Only one level of subdirectories is searched — no recursion.
+- File count resets to `001` per subdirectory.
+
+### Camera ID
+
+- If subdirectories are present and `--camera` is provided, `mfren` will exit with an error. Target a single directory or rely on subdirectory names as camera IDs instead.
+- If subdirectories are present and `--camera` is not provided, each subdirectory name is used as the camera ID.
+- If no subdirectories are present and `--camera` is provided, the provided value is used as the camera ID.
+- If no subdirectories are present and `--camera` is not provided, the target directory name is used as the camera ID.
+
+### Files
+
+- Only media files are renamed. Use `--list-extensions` to see supported extensions.
+- Unsupported file extensions are skipped silently.
+- Hidden files (starting with `.`) are skipped.
+
+### Safety
+
+- A confirmation prompt is shown before renaming since the operation is destructive and cannot be undone.
+- Use `--dry-run` to verify the expected output before committing.
+
+### Output
+
+- Silent on success by default — no news is good news.
+- The current date is used by default. Use `--date` to override.
+- Use `--verbose` to print each rename as it happens.
+- Use `--dry-run` to preview renames without applying them. Skips the confirmation prompt.
+
 ## About
  
 `mfren` is a learning project built to get comfortable with Go, Cobra, and CLI tool design patterns. It solves a real problem I had (renaming media files consistently after a shoot) while serving as a foundation for more complex Go projects.
