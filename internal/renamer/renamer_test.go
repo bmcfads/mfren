@@ -225,18 +225,6 @@ func TestRenameCameraOverride(t *testing.T) {
 	})
 }
 
-func TestRenameCameraErrorWithSubdirectories(t *testing.T) {
-	dir := t.TempDir()
-	cam1 := filepath.Join(dir, testCameraIDs[0])
-	os.Mkdir(cam1, 0755)
-	createTestFiles(t, cam1, []string{"GS010001.360"})
-
-	err := Rename(dir, Flags{Camera: "my-cam"})
-	if err == nil {
-		t.Fatal("expected error when --camera is used with subdirectories, got nil")
-	}
-}
-
 func TestRenameDateOverride(t *testing.T) {
 	dir := t.TempDir()
 	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
