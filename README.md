@@ -131,3 +131,7 @@ mfren --list-extensions
 ## About
  
 `mfren` is a learning project built to get comfortable with Go, Cobra, and CLI tool design patterns. It solves a real problem I had (renaming media files consistently after a shoot) while serving as a foundation for more complex Go projects.
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
