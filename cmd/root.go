@@ -74,9 +74,9 @@ func run(cmd *cobra.Command, args []string) error {
 
 	// informational flags - print and exit regardless of other args or flags
 	if flagListExtensions {
-		fmt.Printf("360:   [%s]\n", strings.Join(renamer.Extensions360, ", "))
-		fmt.Printf("Photo: [%s]\n", strings.Join(renamer.ExtensionsPhoto, ", "))
-		fmt.Printf("Video: [%s]\n", strings.Join(renamer.ExtensionsVideo, ", "))
+		fmt.Printf("360:   %s\n", strings.Join(renamer.Extensions360, " "))
+		fmt.Printf("Photo: %s\n", strings.Join(renamer.ExtensionsPhoto, " "))
+		fmt.Printf("Video: %s\n", strings.Join(renamer.ExtensionsVideo, " "))
 		return nil
 	}
 
