@@ -70,7 +70,6 @@ func run(cmd *cobra.Command, args []string) error {
 		if strings.ToLower(strings.TrimSpace(answer)) != "y" {
 			return nil
 		}
-		fmt.Printf("Directory: %s\n", dir)
 	}
 
 	return renamer.Rename(dir, renamer.Flags{
