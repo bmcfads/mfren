@@ -107,7 +107,7 @@ A script is provided to generate mock media files for manual testing:
 
 If no destination is provided, files are created under `/tmp/media`. The script will prompt you to select a scenario:
 
-**Scenario 1 — Flat directory**
+**Scenario 1: Flat directory**
 
 Creates a single directory with 10 `.360` files and a `shoot-notes.txt`:
 
@@ -119,7 +119,7 @@ media/
   shoot-notes.txt
 ```
 
-**Scenario 2 — Subdirectories with top level files**
+**Scenario 2: Subdirectories with top level files**
 
 Creates a top-level directory with files plus three camera subdirectories, each with a different file type:
 
@@ -144,7 +144,7 @@ media/
 
 - If no subdirectories exist, files in the target directory are renamed directly.
 - If the target directory contains subdirectories, files within each subdirectory are renamed independently using the subdirectory name as the camera ID. Top level files are ignored.
-- Only one level of subdirectories is searched — no recursion.
+- Only one level of subdirectories is searched. No recursion.
 - File count resets to `001` per subdirectory.
 
 ### Camera ID
@@ -167,7 +167,7 @@ media/
 
 ### Output
 
-- Silent on success by default — no news is good news.
+- Silent on success by default. No news is good news.
 - The current date is used by default. Use `--date` to override.
 - Use `--verbose` to print each rename as it happens.
 - Use `--dry-run` to preview renames without applying them. Skips the confirmation prompt.
@@ -178,4 +178,4 @@ media/
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT -  see [LICENSE](LICENSE) for details.
