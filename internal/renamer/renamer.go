@@ -59,9 +59,6 @@ func Rename(dir string, flags Flags) error {
 	}
 
 	if len(subdirs) > 0 {
-		if flags.Camera != "" {
-			return fmt.Errorf("--camera cannot be used when subdirectories are present")
-		}
 		for _, subdir := range subdirs {
 			if err := renameFiles(filepath.Join(dir, subdir), date, subdir, dryRun, verbose); err != nil {
 				return err

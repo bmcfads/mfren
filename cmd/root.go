@@ -41,19 +41,6 @@ func Execute() error {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	if flagDate != "" {
-		if _, err := time.Parse("2006-01-02", flagDate); err != nil {
-			return fmt.Errorf("invalid date format, expected YYYY-MM-DD")
-		}
-	}
-
-	if flagListExtensions {
-		fmt.Printf("360:   [%s]\n", strings.Join(renamer.Extensions360, ", "))
-		fmt.Printf("Photo: [%s]\n", strings.Join(renamer.ExtensionsPhoto, ", "))
-		fmt.Printf("Video: [%s]\n", strings.Join(renamer.ExtensionsVideo, ", "))
-		return nil
-	}
-
 	if len(args) == 0 {
 		return fmt.Errorf("accepts 1 arg(s), received 0")
 	}
@@ -70,6 +57,38 @@ func run(cmd *cobra.Command, args []string) error {
 
 	if !info.IsDir() {
 		return fmt.Errorf("%s is not a directory", dir)
+	}
+
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return fmt.Errorf("cannot read directory: %w", err)
+	}
+
+	hasSubdirs := false
+	for _, entry := range entries {
+		if entry.IsDir() {
+			hasSubdirs = true
+			break
+		}
+	}
+
+	// informational flags - print and exit regardless of other args or flags
+	if flagListExtensions {
+		fmt.Printf("360:   [%s]\n", strings.Join(renamer.Extensions360, ", "))
+		fmt.Printf("Photo: [%s]\n", strings.Join(renamer.ExtensionsPhoto, ", "))
+		fmt.Printf("Video: [%s]\n", strings.Join(renamer.ExtensionsVideo, ", "))
+		return nil
+	}
+
+	// flag validation
+	if flagCamera != "" && hasSubdirs {
+		return fmt.Errorf("--camera cannot be used when subdirectories are present")
+	}
+
+	if flagDate != "" {
+		if _, err := time.Parse("2006-01-02", flagDate); err != nil {
+			return fmt.Errorf("invalid date format, expected YYYY-MM-DD")
+		}
 	}
 
 	if !flagDryRun {
