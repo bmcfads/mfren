@@ -107,6 +107,31 @@ func TestRenameWithSubdirectories(t *testing.T) {
 	})
 }
 
+func TestRenameSkipsUnsupportedExtensions(t *testing.T) {
+	dir := t.TempDir()
+	createTestFiles(t, dir, []string{
+		"GS010001.360", // supported - uppercase sorts before lowercase
+		"clip.mp4",     // supported
+		"photo.jpg",    // supported
+		"data.xml",     // unsupported
+		"readme.txt",   // unsupported
+	})
+
+	if err := Rename(dir, Flags{}); err != nil {
+		t.Fatalf("Rename failed: %v", err)
+	}
+
+	// date-prefixed names sort before "data.xml" and "readme.txt"
+	cameraID := filepath.Base(dir)
+	assertFiles(t, dir, []string{
+		expectedName(cameraID, 1, ".360"),
+		expectedName(cameraID, 2, ".mp4"),
+		expectedName(cameraID, 3, ".jpg"),
+		"data.xml",
+		"readme.txt",
+	})
+}
+
 func TestRenameSkipsHiddenFiles(t *testing.T) {
 	dir := t.TempDir()
 	createTestFiles(t, dir, []string{"GS010001.360", ".DS_Store", ".hidden"})

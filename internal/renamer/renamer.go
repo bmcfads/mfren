@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 )
@@ -14,6 +13,18 @@ type Flags struct {
 	Date    string
 	DryRun  bool
 	Verbose bool
+}
+
+var Extensions360 = []string{
+	".360", ".insp", ".insv",
+}
+
+var ExtensionsPhoto = []string{
+	".arw", ".cr3", ".dng", ".gpr", ".jpeg", ".jpg", ".png", ".raw",
+}
+
+var ExtensionsVideo = []string{
+	".mov", ".mp4",
 }
 
 // Rename walks dir and renames all media files to the format
@@ -69,6 +80,16 @@ func Rename(dir string, flags Flags) error {
 	return nil
 }
 
+func isSupportedExt(ext string) bool {
+	ext = strings.ToLower(ext)
+	for _, e := range append(append(Extensions360, ExtensionsPhoto...), ExtensionsVideo...) {
+		if ext == e {
+			return true
+		}
+	}
+	return false
+}
+
 func renameFiles(dir, date, cameraID string, dryRun, verbose bool) error {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -83,10 +104,11 @@ func renameFiles(dir, date, cameraID string, dryRun, verbose bool) error {
 		if strings.HasPrefix(entry.Name(), ".") {
 			continue
 		}
+		if !isSupportedExt(filepath.Ext(entry.Name())) {
+			continue
+		}
 		files = append(files, entry.Name())
 	}
-
-	sort.Strings(files)
 
 	for i, file := range files {
 		ext := filepath.Ext(file)
