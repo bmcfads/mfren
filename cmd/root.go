@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/bmcfads/mfren/internal/renamer"
@@ -55,6 +57,20 @@ func run(cmd *cobra.Command, args []string) error {
 		if _, err := time.Parse("2006-01-02", flagDate); err != nil {
 			return fmt.Errorf("invalid date format, expected YYYY-MM-DD")
 		}
+	}
+
+	if !flagDryRun {
+		fmt.Printf("\nDirectory: %s\n", dir)
+		fmt.Println("Warning: renaming files is destructive and cannot be undone.")
+		fmt.Print("Proceed? [y/N]: ")
+		answer, err := bufio.NewReader(os.Stdin).ReadString('\n')
+		if err != nil {
+			return fmt.Errorf("failed to read input: %w", err)
+		}
+		if strings.ToLower(strings.TrimSpace(answer)) != "y" {
+			return nil
+		}
+		fmt.Printf("Directory: %s\n", dir)
 	}
 
 	return renamer.Rename(dir, renamer.Flags{
