@@ -48,12 +48,6 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	if flagListExtensions {
-		if cmd.Flags().NFlag() > 1 {
-			return fmt.Errorf("--list-extensions cannot be used with other flags")
-		}
-		if len(args) > 0 {
-			return fmt.Errorf("--list-extensions does not accept a directory argument")
-		}
 		fmt.Printf("360:   [%s]\n", strings.Join(renamer.Extensions360, ", "))
 		fmt.Printf("Photo: [%s]\n", strings.Join(renamer.ExtensionsPhoto, ", "))
 		fmt.Printf("Video: [%s]\n", strings.Join(renamer.ExtensionsVideo, ", "))
