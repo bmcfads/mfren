@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type Flags struct {
+type Options struct {
 	Camera  string
 	Date    string
 	DryRun  bool
@@ -33,7 +33,7 @@ var ExtensionsVideo = []string{
 // subdirectories, files within each are renamed independently with
 // the file count resetting to 001 per subdirectory. Only one level
 // of subdirectories is searched. Hidden files are skipped.
-func Rename(dir string, flags Flags) error {
+func Rename(dir string, flags Options) error {
 	date := flags.Date
 	dryRun := flags.DryRun
 	verbose := flags.Verbose

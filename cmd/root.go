@@ -106,7 +106,7 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return renamer.Rename(dir, renamer.Flags{
+	return renamer.Rename(dir, renamer.Options{
 		Camera:  flags.camera,
 		Date:    flags.date,
 		DryRun:  flags.dryRun,
