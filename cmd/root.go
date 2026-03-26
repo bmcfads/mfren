@@ -17,6 +17,7 @@ var rootCmd = &cobra.Command{
 	Short:   "Rename media files after shoot",
 	Version: "0.1.0",
 	Args:    cobra.RangeArgs(0, 1),
+	PreRunE: preRun,
 	RunE:    run,
 }
 
@@ -38,13 +39,13 @@ func init() {
 
 func Execute() error {
 	// Eliminate noisy output.
-	// Errors printed through main() and usage printed through --help only.
+	// Errors printed through main.go and usage printed through --help only.
 	rootCmd.SilenceErrors = true
 	rootCmd.SilenceUsage = true
 	return rootCmd.Execute()
 }
 
-func run(cmd *cobra.Command, args []string) error {
+func preRun(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("accepts 1 arg(s), received 0")
 	}
@@ -76,15 +77,6 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Informational flags - print and exit regardless of other args or flags.
-	if flags.listExtensions {
-		fmt.Printf("360:   %s\n", strings.Join(renamer.Extensions360, " "))
-		fmt.Printf("Photo: %s\n", strings.Join(renamer.ExtensionsPhoto, " "))
-		fmt.Printf("Video: %s\n", strings.Join(renamer.ExtensionsVideo, " "))
-		return nil
-	}
-
-	// Flag validation.
 	if flags.camera != "" && hasSubdirs {
 		return fmt.Errorf("--camera cannot be used when subdirectories are present")
 	}
@@ -94,6 +86,21 @@ func run(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("invalid date format, expected YYYY-MM-DD")
 		}
 	}
+
+	return nil
+}
+
+func run(cmd *cobra.Command, args []string) error {
+	// Informational flag(s) - print and exit regardless of other args or flags.
+	if flags.listExtensions {
+		fmt.Printf("360:   %s\n", strings.Join(renamer.Extensions360, " "))
+		fmt.Printf("Photo: %s\n", strings.Join(renamer.ExtensionsPhoto, " "))
+		fmt.Printf("Video: %s\n", strings.Join(renamer.ExtensionsVideo, " "))
+		return nil
+	}
+
+	// Error ignored since preRun already validated the path
+	dir, _ := filepath.Abs(args[0])
 
 	// Request user confirmation as this action can't be undone.
 	if !flags.dryRun {
