@@ -61,7 +61,7 @@ func TestRenameFlatDirectory(t *testing.T) {
 		"GS010003.360",
 	})
 
-	if err := Rename(dir, Flags{}); err != nil {
+	if err := Rename(dir, Options{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -87,7 +87,7 @@ func TestRenameWithSubdirectories(t *testing.T) {
 	createTestFiles(t, cam2, []string{"GX010001.MP4", "GX010002.MP4"})
 	createTestFiles(t, cam3, []string{"GX010001.MP4", "GX010002.MP4"})
 
-	if err := Rename(dir, Flags{}); err != nil {
+	if err := Rename(dir, Options{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -117,7 +117,7 @@ func TestRenameSkipsUnsupportedExtensions(t *testing.T) {
 		"readme.txt",   // unsupported
 	})
 
-	if err := Rename(dir, Flags{}); err != nil {
+	if err := Rename(dir, Options{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -136,7 +136,7 @@ func TestRenameSkipsHiddenFiles(t *testing.T) {
 	dir := t.TempDir()
 	createTestFiles(t, dir, []string{"GS010001.360", ".DS_Store", ".hidden"})
 
-	if err := Rename(dir, Flags{}); err != nil {
+	if err := Rename(dir, Options{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -155,7 +155,7 @@ func TestRenameSkipsHiddenFiles(t *testing.T) {
 func TestRenameEmptyDirectory(t *testing.T) {
 	dir := t.TempDir()
 
-	if err := Rename(dir, Flags{}); err != nil {
+	if err := Rename(dir, Options{}); err != nil {
 		t.Fatalf("Rename failed on empty directory: %v", err)
 	}
 }
@@ -171,7 +171,7 @@ func TestRenameSubdirectoryContainingDirectory(t *testing.T) {
 	createTestFiles(t, cam1, []string{"GS010001.360", "GS010002.360"})
 	createTestFiles(t, nested, []string{"GS010001.360"})
 
-	if err := Rename(dir, Flags{}); err != nil {
+	if err := Rename(dir, Options{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -195,7 +195,7 @@ func TestRenameSubdirectoriesIgnoresTopLevelFiles(t *testing.T) {
 	createTestFiles(t, dir, []string{"GS010001.360"})
 	createTestFiles(t, cam1, []string{"GS010002.360"})
 
-	if err := Rename(dir, Flags{}); err != nil {
+	if err := Rename(dir, Options{}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -215,7 +215,7 @@ func TestRenameCameraOverride(t *testing.T) {
 	dir := t.TempDir()
 	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
 
-	if err := Rename(dir, Flags{Camera: "my-cam"}); err != nil {
+	if err := Rename(dir, Options{Camera: "my-cam"}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -229,7 +229,7 @@ func TestRenameDateOverride(t *testing.T) {
 	dir := t.TempDir()
 	createTestFiles(t, dir, []string{"GS010001.360", "GS010002.360"})
 
-	if err := Rename(dir, Flags{Date: "2020-01-15"}); err != nil {
+	if err := Rename(dir, Options{Date: "2020-01-15"}); err != nil {
 		t.Fatalf("Rename failed: %v", err)
 	}
 
@@ -248,7 +248,7 @@ func TestRenameDryRun(t *testing.T) {
 	old := os.Stdout
 	os.Stdout = w
 
-	err := Rename(dir, Flags{DryRun: true})
+	err := Rename(dir, Options{DryRun: true})
 
 	w.Close()
 	os.Stdout = old
@@ -284,7 +284,7 @@ func TestRenameVerbose(t *testing.T) {
 	old := os.Stdout
 	os.Stdout = w
 
-	err := Rename(dir, Flags{Verbose: true})
+	err := Rename(dir, Options{Verbose: true})
 
 	w.Close()
 	os.Stdout = old

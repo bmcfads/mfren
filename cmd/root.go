@@ -20,21 +20,25 @@ var rootCmd = &cobra.Command{
 	RunE:    run,
 }
 
-var flagCamera string
-var flagDate string
-var flagDryRun bool
-var flagListExtensions bool
-var flagVerbose bool
+var flags struct {
+	camera         string
+	date           string
+	dryRun         bool
+	listExtensions bool
+	verbose        bool
+}
 
 func init() {
-	rootCmd.Flags().StringVarP(&flagCamera, "camera", "c", "", "camera ID override")
-	rootCmd.Flags().StringVarP(&flagDate, "date", "d", "", "date override (YYYY-MM-DD)")
-	rootCmd.Flags().BoolVarP(&flagDryRun, "dry-run", "n", false, "print renames without applying them")
-	rootCmd.Flags().BoolVar(&flagListExtensions, "list-extensions", false, "print supported file extensions")
-	rootCmd.Flags().BoolVar(&flagVerbose, "verbose", false, "print each rename as it happens")
+	rootCmd.Flags().StringVarP(&flags.camera, "camera", "c", "", "camera ID override")
+	rootCmd.Flags().StringVarP(&flags.date, "date", "d", "", "date override (YYYY-MM-DD)")
+	rootCmd.Flags().BoolVarP(&flags.dryRun, "dry-run", "n", false, "print renames without applying them")
+	rootCmd.Flags().BoolVar(&flags.listExtensions, "list-extensions", false, "print supported file extensions")
+	rootCmd.Flags().BoolVar(&flags.verbose, "verbose", false, "print each rename as it happens")
 }
 
 func Execute() error {
+	// Eliminate noisy output.
+	// Errors printed through main() and usage printed through --help only.
 	rootCmd.SilenceErrors = true
 	rootCmd.SilenceUsage = true
 	return rootCmd.Execute()
@@ -72,26 +76,27 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// informational flags - print and exit regardless of other args or flags
-	if flagListExtensions {
+	// Informational flags - print and exit regardless of other args or flags.
+	if flags.listExtensions {
 		fmt.Printf("360:   %s\n", strings.Join(renamer.Extensions360, " "))
 		fmt.Printf("Photo: %s\n", strings.Join(renamer.ExtensionsPhoto, " "))
 		fmt.Printf("Video: %s\n", strings.Join(renamer.ExtensionsVideo, " "))
 		return nil
 	}
 
-	// flag validation
-	if flagCamera != "" && hasSubdirs {
+	// Flag validation.
+	if flags.camera != "" && hasSubdirs {
 		return fmt.Errorf("--camera cannot be used when subdirectories are present")
 	}
 
-	if flagDate != "" {
-		if _, err := time.Parse("2006-01-02", flagDate); err != nil {
+	if flags.date != "" {
+		if _, err := time.Parse("2006-01-02", flags.date); err != nil {
 			return fmt.Errorf("invalid date format, expected YYYY-MM-DD")
 		}
 	}
 
-	if !flagDryRun {
+	// Request user confirmation as this action can't be undone.
+	if !flags.dryRun {
 		fmt.Printf("\nDirectory: %s\n", dir)
 		fmt.Println("Warning: renaming files is destructive and cannot be undone.")
 		fmt.Print("Proceed? [y/N]: ")
@@ -104,10 +109,10 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return renamer.Rename(dir, renamer.Flags{
-		Camera:  flagCamera,
-		Date:    flagDate,
-		DryRun:  flagDryRun,
-		Verbose: flagVerbose,
+	return renamer.Rename(dir, renamer.Options{
+		Camera:  flags.camera,
+		Date:    flags.date,
+		DryRun:  flags.dryRun,
+		Verbose: flags.verbose,
 	})
 }

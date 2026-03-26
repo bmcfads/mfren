@@ -1,4 +1,4 @@
 # Build artifacts
 *.exe
 dist/
-mfren
+/mfren

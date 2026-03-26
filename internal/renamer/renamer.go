@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 )
 
-type Flags struct {
+type Options struct {
 	Camera  string
 	Date    string
 	DryRun  bool
@@ -33,7 +34,7 @@ var ExtensionsVideo = []string{
 // subdirectories, files within each are renamed independently with
 // the file count resetting to 001 per subdirectory. Only one level
 // of subdirectories is searched. Hidden files are skipped.
-func Rename(dir string, flags Flags) error {
+func Rename(dir string, flags Options) error {
 	date := flags.Date
 	dryRun := flags.DryRun
 	verbose := flags.Verbose
@@ -79,12 +80,9 @@ func Rename(dir string, flags Flags) error {
 
 func isSupportedExt(ext string) bool {
 	ext = strings.ToLower(ext)
-	for _, e := range append(append(Extensions360, ExtensionsPhoto...), ExtensionsVideo...) {
-		if ext == e {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(Extensions360, ext) ||
+		slices.Contains(ExtensionsPhoto, ext) ||
+		slices.Contains(ExtensionsVideo, ext)
 }
 
 func renameFiles(dir, date, cameraID string, dryRun, verbose bool) error {

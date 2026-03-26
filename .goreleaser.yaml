@@ -40,11 +40,16 @@ changelog:
       regexp: "^feat:"
     - title: "Bug Fixes"
       regexp: "^fix:"
+    - title: "Performance Improvements"
+      regexp: "^perf:"
     - title: "Other"
       order: 999
   filters:
     exclude:
       - "^chore:"
+      - "^ci:"
       - "^docs:"
-      - "^readme:"
+      - "^refactor:"
+      - "^revert:"
+      - "^style:"
       - "^test:"
