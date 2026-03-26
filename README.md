@@ -6,6 +6,10 @@ A CLI tool for renaming video and photo files after a day of shooting. Built as 
 
 `mfren` walks a directory and renames media files into a consistent, date-stamped format. It supports camera IDs, dry-run previews, and both flat and nested directory structures.
 
+## Design
+
+For the reasoning behind key design decisions, see [Learning Go: Design Decisions That Held Up](https://blog.bmcfads.ca/learning-go-cli-design-decisions-that-held-up/). 
+
 ## Installation
  
 ```bash
