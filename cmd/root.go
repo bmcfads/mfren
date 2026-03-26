@@ -37,6 +37,8 @@ func init() {
 }
 
 func Execute() error {
+	// Eliminate noisy output.
+	// Errors printed through main() and usage printed through --help only.
 	rootCmd.SilenceErrors = true
 	rootCmd.SilenceUsage = true
 	return rootCmd.Execute()
@@ -74,7 +76,7 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// informational flags - print and exit regardless of other args or flags
+	// Informational flags - print and exit regardless of other args or flags.
 	if flags.listExtensions {
 		fmt.Printf("360:   %s\n", strings.Join(renamer.Extensions360, " "))
 		fmt.Printf("Photo: %s\n", strings.Join(renamer.ExtensionsPhoto, " "))
@@ -82,7 +84,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// flag validation
+	// Flag validation.
 	if flags.camera != "" && hasSubdirs {
 		return fmt.Errorf("--camera cannot be used when subdirectories are present")
 	}
@@ -93,6 +95,7 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	// Request user confirmation as this action can't be undone.
 	if !flags.dryRun {
 		fmt.Printf("\nDirectory: %s\n", dir)
 		fmt.Println("Warning: renaming files is destructive and cannot be undone.")
