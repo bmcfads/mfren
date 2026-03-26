@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 )
@@ -79,12 +80,9 @@ func Rename(dir string, flags Options) error {
 
 func isSupportedExt(ext string) bool {
 	ext = strings.ToLower(ext)
-	for _, e := range append(append(Extensions360, ExtensionsPhoto...), ExtensionsVideo...) {
-		if ext == e {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(Extensions360, ext) ||
+		slices.Contains(ExtensionsPhoto, ext) ||
+		slices.Contains(ExtensionsVideo, ext)
 }
 
 func renameFiles(dir, date, cameraID string, dryRun, verbose bool) error {
