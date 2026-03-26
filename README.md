@@ -8,7 +8,7 @@ A CLI tool for renaming video and photo files after a day of shooting. Built as 
 
 ## Design
 
-For the reasoning behind key design decisions, see [Learning Go: Design Decisions That Held Up](https://blog.bmcfads.ca/learning-go-cli-design-decisions-that-held-up/). 
+For the reasoning behind key design decisions, see [Learning Go: CLI Design Decisions That Held Up](https://blog.bmcfads.ca/learning-go-cli-design-decisions-that-held-up/). 
 
 ## Installation
  
